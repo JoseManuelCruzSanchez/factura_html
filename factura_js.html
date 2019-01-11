@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Objetos JS Factura</title>
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+    <style>
+        #salida_factura{
+            display: block;
+        }
+    </style>
+</head>
+<body>
+<form id="form_factura">
+    Nombre cliente:<input id="input_cliente" type="text"><br><br>
+    Nombre articulo:<input id="input_articulo_nombre" type="text"><br><br>
+    Descripción articulo:<input id="input_articulo_descripcion" type="text"><br><br>
+    Cantidad articulos:<input id="input_articulo_cantidad" type="number"><br><br>
+    Precio articulo<input id="input_articulo_subtotal" type="number"><br><br>
+    <input type="button" onclick="generar_factura()" value="Generar Factura"></input>
+</form>
+
+<div id="salida_factura">
+    <div id="page-wrap">
+
+        <textarea id="header">FACTURA</textarea>
+
+        <div id="identity">
+
+            <textarea id="address">José Manuel Cruz
+Av. Sagasta 22, Bajo
+50010, Zaragoza, España
+
+Teléfono: 976-253545</textarea>
+
+            <div id="logo">
+                <div id="logohelp">
+                    <input id="imageloc" type="text" size="50" value="" /><br />
+                    (max width: 540px, max height: 100px)
+                </div>
+                <img id="image" src="images/logo-negro.png" alt="logo" />
+            </div>
+
+        </div>
+
+        <div style="clear:both"></div>
+
+        <div id="customer">
+
+            <textarea id="nombre_cliente">Pepe...</textarea>
+
+            <table id="meta">
+                <tr>
+                    <td class="meta-head">Factura #</td>
+                    <td><textarea id="numero_factura">-</textarea></td>
+                </tr>
+                <tr>
+
+                    <td class="meta-head">Fecha</td>
+                    <td><textarea id="date">11 de Enero de 2019</textarea></td>
+                </tr>
+                <tr>
+                    <td class="meta-head">Total</td>
+                    <td><div class="due"  id="total_factura_2">-</div></td>
+                </tr>
+
+            </table>
+
+        </div>
+
+        <table id="items">
+
+            <tr>
+                <th>Artículo</th>
+                <th>Descripción</th>
+                <th>Coste Unidad</th>
+                <th>Cantidad</th>
+                <th>Precio</th>
+            </tr>
+
+            <tr class="item-row">
+                <td class="item-name"><div class="delete-wpr"><textarea id="salida_articulo_nombre">-</textarea></div></td>
+                <td class="description"><textarea  id="salida_articulo_descripcion">-</textarea></td>
+                <td><textarea class="cost"  id="salida_articulo_coste_unidad">-</textarea></td>
+                <td><textarea class="qty"  id="salida_articulo_cantidad">-</textarea></td>
+                <td><span class="price"  id="salida_articulo_coste_total_1">-</span></td>
+            </tr>
+
+            <!--<tr class="item-row">
+                <td class="item-name"><div class="delete-wpr"><textarea>SSL Renewals</textarea></div></td>
+
+                <td class="description"><textarea>Yearly renewals of SSL certificates on main domain and several subdomains</textarea></td>
+                <td><textarea class="cost">$75.00</textarea></td>
+                <td><textarea class="qty">3</textarea></td>
+                <td><span class="price">$225.00</span></td>
+            </tr>-->
+
+            <tr>
+                <td colspan="2" class="blank"> </td>
+                <td colspan="2" class="total-line">Subtotal</td>
+                <td class="total-value"><div id="salida_articulo_coste_total_2">-</div></td>
+            </tr>
+            <tr>
+                <td colspan="2" class="blank"> </td>
+                <td colspan="2" class="total-line">IVA</td>
+                <td class="total-value"><div id="salida_iva">-</div></td>
+            </tr>
+            <tr>
+
+                <td colspan="2" class="blank"> </td>
+                <td colspan="2" class="total-line">Total</td>
+                <td class="total-value"><div id="total_factura_1">-</div></td>
+            </tr>
+
+        </table>
+
+    </div>
+</div>
+
+<script>
+    class Factura {
+        constructor(numero, cliente, divisa, subtotal, IVA, articulo_nombre, articulo_descripcion, articulo_cantidad){
+            this.numero = numero;
+            this.cliente = cliente;
+            this.divisa = divisa;
+            this.subtotal = subtotal;
+            this.IVA = IVA;
+            this.articulo_nombre = articulo_nombre;
+            this.articulo_descripcion = articulo_descripcion;
+            this.articulo_cantidad = articulo_cantidad;
+        }
+
+        get total(){
+            return this.articulo_cantidad * this.subtotal + (this.subtotal * this.IVA / 100);
+        }
+
+        get total_sin_iva(){
+            return this.articulo_cantidad * this.subtotal;
+        }
+    }
+
+    function generar_factura() {
+        let input_cliente = document.querySelector('#input_cliente').value;
+        let input_articulo_nombre = document.querySelector('#input_articulo_nombre').value;
+        let input_articulo_descripcion = document.querySelector('#input_articulo_descripcion').value;
+        let input_articulo_cantidad = document.querySelector('#input_articulo_cantidad').value;
+        let input_subtotal = Number(document.querySelector('#input_articulo_subtotal').value);
+        let factura = new Factura('00001', input_cliente, '€', input_subtotal, 21, input_articulo_nombre, input_articulo_descripcion, input_articulo_cantidad);
+        document.querySelector('#numero_factura').value = factura.numero;
+        document.querySelector('#nombre_cliente').value = factura.cliente;
+
+        document.querySelector('#salida_articulo_nombre').value = factura.articulo_nombre;
+        document.querySelector('#salida_articulo_descripcion').value = factura.articulo_descripcion;
+        document.querySelector('#salida_articulo_coste_unidad').value = factura.subtotal;
+        document.querySelector('#salida_articulo_cantidad').value = factura.articulo_cantidad;
+        document.querySelector('#salida_articulo_coste_total_1').innerHTML = factura.total_sin_iva();
+        document.querySelector('#salida_articulo_coste_total_2').innerHTML = factura.total_sin_iva();
+
+        document.querySelector('#salida_iva').innerHTML = factura.IVA + '%';
+        document.querySelector('#total_factura_1').innerHTML = factura.total;
+        document.querySelector('#total_factura_2').innerHTML = factura.total;
+
+        document.querySelector('#salida_factura').style.display = 'block';
+        document.querySelector('#form_factura').style.display = 'none';
+    }
+</script>
+
+</body>
+</html>
